@@ -1,0 +1,62 @@
+
+## Arduino Code
+
+
+#include "DHT.h"
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+#define DHTPIN 2
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(9600);
+  dht.begin();
+
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {  // I2C address
+    Serial.println("OLED not found!");
+    for(;;);
+  }
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println("Weather Station");
+  display.display();
+  delay(2000);
+}
+
+void loop() {
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
+
+  Serial.print("Humidity: ");
+  Serial.print(h);
+  Serial.print(" %  Temp: ");
+  Serial.print(t);
+  Serial.println(" C");
+
+  display.clearDisplay();
+
+  display.setTextSize(2);
+  display.setCursor(0,0);
+  display.print("T:");
+  display.print(t);
+  display.println("C");
+
+  display.setTextSize(2);
+  display.setCursor(0,30);
+  display.print("H:");
+  display.print(h);
+  display.println("%");
+
+  display.display();
+  delay(2000);
+}
